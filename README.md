@@ -1,3 +1,7 @@
-This UI is Open source
-use whatever you want 
-// full credits to Samet
+All UI'S Are OPEN SOURCE & MADE BY SAMET
+THEY'RE JUST REMODIFIED BY ME aka TeeX
+IF YOU SOMEHOW FIND THIS UI FEEL FREE TO USE WHATEVER U WANT,
+JUST CREDIT BOTH ME & SAMET
+
+
+// Thx
