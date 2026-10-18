@@ -1,6 +1,16 @@
+--[[
+    TeeX.lol UI
+    modified by TeeX
+    The Best UI Modifier From Mar's
 
+    This UI is open sourced, you can use whatever's here.
 
+    Ily Samet
+    original scoot ui library made by samet
+    https://discord.gg/VhvTd5HV8d
 
+    example/documentation is at the bottom
+]]
 
 if Library then
     Library:Unload()
