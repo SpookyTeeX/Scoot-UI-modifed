@@ -77,9 +77,9 @@ local Library do
         FadeSpeed = 0.2,
 
         Folders = {
-            Directory = "scoot",
-            Configs = "scoot/Configs/" .. tostring(game.PlaceId),
-            Assets = "scoot/Assets",
+            Directory = "TeeX.lol",
+            Configs = "TeeX.lol/Configs/" .. tostring(game.PlaceId),
+            Assets = "TeeX.lol/Assets",
         },
 
         Images = {
@@ -1229,6 +1229,28 @@ local Library do
         for _, Entry in Library.GlowItems do
             Library:ApplyGlowToItem(Entry, Library.GlowIntensity)
         end
+    end
+
+    Library.FormatKeyDuration = function(self, Seconds)
+        Seconds = tonumber(Seconds) or 0
+
+        if Seconds <= 0 then
+            return "Lifetime"
+        end
+
+        local Days = MathFloor(Seconds / 86400)
+        local Hours = MathFloor((Seconds % 86400) / 3600)
+        local Minutes = MathFloor((Seconds % 3600) / 60)
+
+        if Days > 0 then
+            return Hours > 0 and StringFormat("%dd %dh", Days, Hours) or StringFormat("%dd", Days)
+        elseif Hours > 0 then
+            return Minutes > 0 and StringFormat("%dh %dm", Hours, Minutes) or StringFormat("%dh", Hours)
+        elseif Minutes > 0 then
+            return StringFormat("%dm", Minutes)
+        end
+
+        return StringFormat("%ds", MathFloor(Seconds))
     end
 
     local Components = { } do
@@ -5736,7 +5758,7 @@ function Hood3D.Mount(target, options)
 	options = options or {}
 
 	local gui = resolveScreenGui(target)
-	assert(gui, "Hood3D.Mount: expected a ScreenGui (or a Scoot Library / holder object)")
+	assert(gui, "Hood3D.Mount: expected a ScreenGui (or a TeeX.lol Library / holder object)")
 
 	local keepInstances = {}
 	if type(target) == "table" then
@@ -6519,6 +6541,52 @@ return Hood3D
                 CornerRadius = UDimNew(1, 0)
             })
 
+            Items["KeyBadge"] = Instances:Create("Frame", {
+                Parent = Items["Side"].Instance,
+                Name = "\0",
+                AnchorPoint = Vector2New(1, 1),
+                Position = UDim2New(1, -6, 1, -35),
+                Size = UDim2New(0, 0, 0, 16),
+                AutomaticSize = Enum.AutomaticSize.X,
+                Visible = false,
+                BorderColor3 = FromRGB(12, 12, 12),
+                BorderSizePixel = 1,
+                BackgroundColor3 = FromRGB(30, 36, 31)
+            })  Items["KeyBadge"]:AddToTheme({BackgroundColor3 = "Element", BorderColor3 = "Border"})
+
+            Items["KeyBadge"]:Border("Outline")
+
+            Instances:Create("UICorner", {
+                Parent = Items["KeyBadge"].Instance,
+                Name = "\0",
+                CornerRadius = UDimNew(1, 0)
+            })
+
+            Instances:Create("UIPadding", {
+                Parent = Items["KeyBadge"].Instance,
+                Name = "\0",
+                PaddingLeft = UDimNew(0, 7),
+                PaddingRight = UDimNew(0, 7)
+            })
+
+            Items["KeyBadgeText"] = Instances:Create("TextLabel", {
+                Parent = Items["KeyBadge"].Instance,
+                Name = "\0",
+                FontFace = Library.Font,
+                TextColor3 = FromRGB(180, 143, 251),
+                Text = "",
+                AnchorPoint = Vector2New(0.5, 0.5),
+                Position = UDim2New(0.5, 0, 0.5, 0),
+                Size = UDim2New(0, 0, 0, 12),
+                AutomaticSize = Enum.AutomaticSize.X,
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                TextSize = 8,
+                BackgroundColor3 = FromRGB(255, 255, 255)
+            })  Items["KeyBadgeText"]:AddToTheme({TextColor3 = "Accent"})
+
+            Items["KeyBadgeText"]:TextBorder()
+
             Items["Content"] = Instances:Create("Frame", {
                 Parent = Items["Window"].Instance,
                 Name = "\0",
@@ -6610,6 +6678,22 @@ return Hood3D
             if OldSizes[Item] then
                 return OldSizes[Item]
             end
+        end
+
+        function Window:SetKeyBadge(Seconds)
+            if Seconds == nil then
+                Items["KeyBadge"].Instance.Visible = false
+                return
+            end
+
+            Items["KeyBadgeText"].Instance.Text = Library:FormatKeyDuration(Seconds)
+            Items["KeyBadge"].Instance.Visible = true
+        end
+
+        if Data.KeyTimeLeft ~= nil then
+            Window:SetKeyBadge(Data.KeyTimeLeft)
+        elseif type(LP_TIMELEFT) == "number" then
+            Window:SetKeyBadge(LP_TIMELEFT)
         end
 
         function Window:SetOpen(Bool)
