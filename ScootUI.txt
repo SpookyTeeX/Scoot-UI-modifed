@@ -846,7 +846,10 @@ local Library do
         end
 
         Library = nil
-        getgenv().Library = nil
+
+        if type(getgenv) == "function" then
+            getgenv().Library = nil
+        end
 
         UserInputService.MouseIconEnabled = true
     end
@@ -6232,8 +6235,10 @@ function Hood3D.Mount(target, options)
 	return state
 end
 
-getgenv().Hood3D = Hood3D
-getgenv().Hood3D_Mount = Hood3D.Mount
+if type(getgenv) == "function" then
+	getgenv().Hood3D = Hood3D
+	getgenv().Hood3D_Mount = Hood3D.Mount
+end
 
 return Hood3D
 
@@ -6269,7 +6274,10 @@ return Hood3D
             })
             if ok and mounted then
                 Library.ThreeDUI.Mounted = mounted
-                getgenv().Hood3DUI = mounted
+
+                if type(getgenv) == "function" then
+                    getgenv().Hood3DUI = mounted
+                end
             end
         elseif not Library.ThreeDUI.Desired and Library.ThreeDUI.Mounted then
             local mounted = Library.ThreeDUI.Mounted
@@ -6296,7 +6304,10 @@ return Hood3D
                 mounted:Destroy()
             end)
             Library.ThreeDUI.Mounted = nil
-            getgenv().Hood3DUI = nil
+
+            if type(getgenv) == "function" then
+                getgenv().Hood3DUI = nil
+            end
         end
     end
 
@@ -7289,7 +7300,7 @@ return Hood3D
             Visible = false,
             Bridge = Data.Bridge or "http://127.0.0.1:8889",
             Poll = Data.Poll or 2,
-            Icons = Data.Icons or getgenv().SpotifyIcons or { },
+            Icons = Data.Icons or (type(getgenv) == "function" and getgenv().SpotifyIcons) or { },
             Cfg = { lyrics = true, art = true, progress = true, controls = true },
         }
 
@@ -8643,5 +8654,8 @@ return Hood3D
     end
 end
 
-getgenv().Library = Library
+if type(getgenv) == "function" then
+    getgenv().Library = Library
+end
+
 return Library
