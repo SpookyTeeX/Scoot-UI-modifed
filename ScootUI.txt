@@ -5000,7 +5000,7 @@ local Library do
     end
 
     Library.Watermark = function(self, Name)
-        local Watermark = { }
+        local Watermark = { BaseName = Name }
 
         local Items = { } do
             Items["Watermark"] = Instances:Create("Frame", {
@@ -5062,9 +5062,43 @@ local Library do
             })  Items["Liner"]:AddToTheme({BackgroundColor3 = "Accent"})
         end
 
+        local WeekDays = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}
+
+        function Watermark:Refresh()
+            local Parts = { }
+
+            if Watermark.BaseName and Watermark.BaseName ~= "" then
+                TableInsert(Parts, Watermark.BaseName)
+            end
+
+            TableInsert(Parts, LocalPlayer.DisplayName)
+
+            local Now = os.date("*t")
+            TableInsert(Parts, StringFormat("%02d:%02d:%02d %s", Now.hour, Now.min, Now.sec, WeekDays[Now.wday]))
+
+            if type(LP_KEYNOTE) == "string" and LP_KEYNOTE ~= "" then
+                TableInsert(Parts, LP_KEYNOTE)
+            end
+
+            if type(LP_TIMELEFT) == "number" then
+                TableInsert(Parts, Library:FormatKeyDuration(LP_TIMELEFT))
+            end
+
+            Items["Text"].Instance.Text = TableConcat(Parts, " | ")
+        end
+
         function Watermark:SetVisibility(Bool)
             Items["Watermark"].Instance.Visible = Bool
         end
+
+        Watermark:Refresh()
+
+        Library:Thread(function()
+            while true do
+                task.wait(1)
+                Watermark:Refresh()
+            end
+        end)
 
         return Watermark
     end
